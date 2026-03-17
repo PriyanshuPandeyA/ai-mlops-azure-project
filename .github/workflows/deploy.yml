@@ -1,0 +1,35 @@
+name: CI/CD Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Docker Login
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build Docker Image
+      run: docker build -t priyanshu2223/feedback-ui:v1 .
+
+    - name: Push Docker Image
+      run: docker push priyanshu2223/feedback-ui:v1
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure
+      run: |
+        az containerapp update \
+        --name feedback-ui \
+        --resource-group priyanshu-pandey-rg \
+        --image priyanshu2223/feedback-ui:v1
