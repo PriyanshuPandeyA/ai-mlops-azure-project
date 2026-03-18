@@ -1,4 +1,4 @@
-name: CI/CD Deploy
+name: CI Pipeline (Docker Build & Push)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,15 +21,3 @@ jobs:
 
     - name: Push Docker Image
       run: docker push priyanshu2223/feedback-ui:v1
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Deploy to Azure
-      run: |
-        az containerapp update \
-        --name feedback-ui \
-        --resource-group priyanshu-pandey-rg \
-        --image priyanshu2223/feedback-ui:v1
