@@ -1,6 +1,6 @@
 model_version = "v1"
 
-def predict(text: str):
-    if "good" in text:
-        return "positive"
-    return "negative"
+def predict(text):
+    if "bad" in text.lower():
+        return "negative"
+    return "positive"

@@ -1,25 +1,31 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from model import predict, model_version
-from logger import log_data
+from backend.model import predict, model_version
+from backend.logger import log_data
+import time
 
 app = FastAPI()
 
-class RequestData(BaseModel):
+class InputData(BaseModel):
     text: str
 
 @app.get("/")
 def home():
-    return {"message": "ML API Running"}
+    return {"message": "Customer Feedback API Running"}
 
 @app.post("/predict")
-def get_prediction(data: RequestData):
+def predict_api(data: InputData):
+    start = time.time()
+
     result = predict(data.text)
+
+    end = time.time()
 
     log = {
         "input": data.text,
         "output": result,
-        "model_version": model_version
+        "model_version": model_version,
+        "response_time": end - start
     }
 
     log_data(log)
